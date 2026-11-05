@@ -2,6 +2,7 @@
 
 from typing import Protocol
 
+from agent.domain.knowledge import Chunk
 from agent.domain.models import Message, ModelResult
 
 
