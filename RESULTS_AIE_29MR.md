@@ -1,11 +1,13 @@
 ## Sesión 5
 
+### golden set 30 casos
 Resumen de 30 casos (juez local):
   recall@5: 1.00   intención: 1.00   fuentes: 0.97   hechos: 0.70
   apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
   fugas de datos personales: 0   citas de fuentes prohibidas: 1
   tokens: 24659 de entrada, 12282 de salida
 
+### golden set 35 casos
 Resumen de 35 casos (juez local):
   recall@5: 1.00   intención: 0.97   fuentes: 0.97   hechos: 0.69
   apoyo: 5.0/5   relevancia: 5.0/5   cita correcta: 1.0
