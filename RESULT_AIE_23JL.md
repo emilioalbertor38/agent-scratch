@@ -1,41 +1,27 @@
-    # Resultados AIE-31SC
+## Sesión 6 — Tools del MCP en el chat
 
-## Sesión 5 — Comparar los dos jueces
+Dominio: `loans`. MCP: el mock (`http://127.0.0.1:8200/mcp`) y, si ya tienes `MCP_URL`, el compartido (`bank-mcp`).
 
-Mismo golden set (3x casos), mismo agente (`gpt-5-mini`), dos jueces.
+### Tools de tu dominio
 
-- Juez local (G-Eval): `data/eval/cards-20261113-101356.json`
-- Juez azure_evaluation (decision-1): `data/eval/cards-20261113-100526.json`
+| MCP | Tools que lista `dev/mcp/mcp_tools.py` |
+|---|---|
+| Mock | `get_credit_profile`, `simulate_installment`, `submit_loan_application` |
+| Compartido | `get_credit_profile`, `simulate_installment`, `submit_loan_application` |
 
-| Métrica | G-Eval (`JUDGE=local`) | decision-1 (`azure_evaluation`) |
-|---|---|---|
-| Apoyo (1–5) | _(5.0/5)_ | _(5.0/5)_ |
-| Relevancia (1–5) | _(5.0/5)_ | _(4.9/5)_ |
-| Cita correcta (0–1) | _(1.0)_ | _(1.0)_ |
-| Tokens (entrada / salida) | _(28847)_ | _(28841)_ |
-| Tiempo de la corrida | _(anotar)_ | _(anotar)_ |
+### Conversación en `dev/chat.py` (paso 12)
 
-### ¿Las notas de apoyo y de cita correcta van en la misma dirección?
+| Prueba | Mensaje | Tool pedida (`→`) | Qué pasó | Primer texto / respuesta completa (ms) |
+|---|---|---|---|---|
+| Consulta de tu dominio | ¿Cuánto pagaría al mes por un préstamo de 20000 soles a 24 meses? | `simulate_installment` | El agente calculó la cuota con el MCP; no fue una estimación del modelo. | No medido / Para S/ 20,000 a 24 meses, la cuota mensual sería S/ 985.64. Total pagado: S/ 23,655.36. Simulación realizada con una TEA de 18 %. ¿Quieres cambiar plazo o tasa para otra simulación? |
+| Acción confirmada | Confirmación del usuario de una solicitud de préstamo | `submit_loan_application` | La herramienta fue identificada como acción sensible y quedó pendiente de aprobación; no se ejecutó ni registró. | No medido |
+| Sin tool que la resuelva | quiero confirmacion de ahorro a plazo fijo | Ninguna (`out_of_scope`) | El agente indicó que no podía resolver la solicitud y derivó al área de Ahorros. | No medido / Eso está fuera del alcance de préstamos. Soy agente de préstamos del Banco Demo. Para confirmar un depósito a plazo fijo, contacta al área de Ahorros del banco vía tu sucursal, la Banca Móvil/Internet o el centro de atención. Ten a mano tu número de cuenta y tu DNI. ¿Quieres que te indique los pasos en la app o cómo contactar al área de Ahorros? |
+| Tool de otro dominio | quiero bloquear mi tarjeta | `block_card` no está disponible en el dominio `loans` | El agente no recibió una tool que resolviera la solicitud y respondió dentro de su alcance; no ejecutó el bloqueo. | No medido |
 
-_(sI)_
+### ¿El modelo inventó algún dato cuando ninguna tool lo resolvía?
 
-### ¿Cuánto tardó cada corrida?
-
-- Local (G-Eval): _(5)_.
-- azure_evaluation (decision-1): _(4)_.
-
-### Casos donde no coinciden
-
-_(Relevancia)_
-
-### Diferencias de la corrida local que no vienen del juez
-
-El agente respondió distinto entre corridas (el modelo no es determinista):
-
-- `cards-xy`: _(anotar)_.
-- `cards-xx` (ruido): _(anotar)_.
+No inventó datos ni simuló la operación. Solo indicó que estaba fuera del alcance de préstamos y dio una guía para consultar el depósito a plazo fijo con el área de Ahorros.
 
 ### Conclusión
 
-_(Hay ligera comparación)_
- 
+La configuración de herramientas por dominio evitó mezclar préstamos con tarjetas u ahorros. Conviene mantener esta separación y agregar una respuesta clara cuando la solicitud no tenga una tool disponible.
