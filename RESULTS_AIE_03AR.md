@@ -1,4 +1,4 @@
-# Resultados AIE-31SC
+# Resultados AIE-03AR
  
 ## Sesión 5 — Comparar los dos jueces
  
