@@ -1,0 +1,1 @@
+{"id": "loans-AIE03AR", "type": "answerable", "history": [], "question": "¿Que es TEA y TCEA?", "expected_intent": "product_question", "expected_sources": ["loans-glossary.md"], "forbidden_sources": [], "key_facts": ["TEA=Tasa efectiva anual, TCEA=Costo total anual del préstamo"]}
