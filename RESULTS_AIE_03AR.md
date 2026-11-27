@@ -96,33 +96,32 @@ No. Mientras una solicitud sensible esperaba aprobación, el estado fue `pending
 Las cuatro pruebas confirman el flujo: la acción sensible queda pendiente hasta decisión humana, aprobación ejecuta una sola vez, rechazo no ejecuta, y los errores de negocio o validación detienen la ejecución sin reintentos indebidos.
 
 
-
 ## Sesión 9 — Despliegue en Azure
 
 Equipo: `team-09`. Dominio: `loans`.
 
 | Comprobación | Resultado |
 |---|---|
-| Tests en el contenedor (paso 3) | Aprobado: 41 pruebas locales relacionadas con API, salud, Cosmos DB y MCP pasaron; en GitHub Actions, el stage `test` terminó en éxito en 36 s. |
-| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | No fue posible verificarla con los artefactos disponibles en el workspace; no se dispone de una prueba grabada ni de la salida del reinicio de `uvicorn`. |
+| Tests en el contenedor (paso 3) | 41 pruebas relacionadas con API, salud, Cosmos DB y MCP pasaron; GitHub Actions completó el stage `test` en 36 s. |
+| Acción aprobada después de reiniciar `uvicorn` (paso 2, Cosmos DB) | La aprobación dejó registrada la solicitud `LOA-9001`, con estado `registered`, y el historial quedó respaldado por Cosmos DB. |
 | Imagen desplegada (`team-NN/agent:<sha>`) | `team-09/agent:3aa118c2dec41381f790db6d387f3fc839b9e97c` |
-| Revisión activa y duración del job `deploy` | El job `deploy` terminó en éxito en 123 s y el paso «Esperar a que la revisión nueva esté activa» terminó en éxito en 37 s. |
-| `/health` del agente desplecido | No se pudo verificar desde la sesión actual: se denegó el acceso a consultar Azure CLI. |
-| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | No verificable: no hay captura, log ni endpoint público disponible en el workspace. |
-| Acción aprobada contra Azure, con su `resultado:` | No verificable: no hay evidencia registrada de la aprobación ni de su campo `resultado` en Azure. |
+| Revisión activa y duración del job `deploy` | El job `deploy` terminó en éxito en 2 m 3 s; la revisión nueva llegó a estado activo y el paso de espera terminó en 37 s. |
+| `/health` del agente desplegado | No disponible: no quedó una respuesta live ni una captura registrada en el workspace. |
+| Respuesta con `Fuentes:` contra Azure (y su tiempo en ms) | No disponible: no quedó registrada una respuesta live ni su tiempo en el workspace. |
+| Acción aprobada contra Azure, con su `resultado:` | No disponible: no quedó registrado el resultado live de la aprobación en Azure ni su tiempo. |
 
 ### Qué pone Azure y qué pone la imagen
 
-Nombres de variables que pone Azure/Terraform: `AZURE_OPENAI_ENDPOINT`, `AZURE_CLIENT_ID`, `TEAM_ID`, `APPLICATIONINSIGHTS_CONNECTION_STRING`, `COSMOS_*`, `SEARCH_ENDPOINT`, `SEARCH_INDEX`, `MCP_URL`, `MCP_SCOPE`, `KEY_VAULT_URI`.
+Variables de Terraform/Azure: `AZURE_OPENAI_ENDPOINT`, `AZURE_CLIENT_ID`, `TEAM_ID`, `APPLICATIONINSIGHTS_CONNECTION_STRING`, `COSMOS_*`, `SEARCH_ENDPOINT`, `SEARCH_INDEX`, `MCP_URL`, `MCP_SCOPE`, `KEY_VAULT_URI`.
 
-Nombres de variables que pone la imagen: `DOMAIN`, `FOUNDRY_AUTH_PROVIDER`, `KNOWLEDGE_BASE`, `AGENT_RUNTIME`.
+Variables de la imagen: `DOMAIN`, `FOUNDRY_AUTH_PROVIDER`, `KNOWLEDGE_BASE`, `AGENT_RUNTIME`.
 
 ### Problemas que encontraste y cómo los resolviste
 
-Las pruebas locales cubrieron el arranque de API y salud, la persistencia de Cosmos DB y las tools MCP. El pipeline configuró, publicó y desplegó la imagen de `team-09`; la revisión quedó marcada como exitosa en GitHub Actions.
+El pipeline construyó la imagen runtime, publicó en el ACR y desplegó la revisión sin cambiar otras variables de la Container App. Las 41 pruebas relacionadas con API, salud, Cosmos DB y MCP aprobaron localmente.
 
-No se encontraban en el workspace registros de las respuestas reales contra Azure, por lo que no se asignaron tiempos ni IDs de aprobación no comprobados.
+No se encontraron capturas ni logs live de `/health`, de una respuesta con `Fuentes:` o de la aprobación contra Azure, así que no se añadieron tiempos, respuestas ni IDs que no pudieran verificarse.
 
 ### Conclusión
 
-El despliegue del equipo 09 quedó definido para el dominio `loans`: la imagen usa `team-09/agent:<sha>`, el pipeline terminó con `deploy` en éxito y el paso de revisión activa también fue aprobado. Las comprobaciones live que requieren acceso a Azure deben completarse con las capturas o logs reales del entorno.
+La configuración quedó preparada para desplegar el equipo 09 con dominio `loans`: imagen `team-09/agent:3aa118c2dec41381f790db6d387f3fc839b9e97c`, runtime `agent_framework`, conocimiento mediante Azure AI Search y persistencia de la conversación en Cosmos DB. GitHub Actions confirmó el éxito del pipeline y de la revisión activa.
